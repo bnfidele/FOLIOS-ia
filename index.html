@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Folios IA - Chat Application</title>
+    <link rel="stylesheet" href="./src/css/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static/font/lucide.css">
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-white text-gray-900" x-data="app()" x-init="init()">
+    <!-- Auth Modal -->
+    <div x-show="!isAuthenticated" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-lg p-8 w-96">
+            <h1 class="text-3xl font-bold text-blue-600 mb-6 text-center">Folios IA</h1>
+            
+            <!-- Login Form -->
+            <form x-show="!isRegisterMode" @submit.prevent="login" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Email</label>
+                    <input type="email" x-model="loginData.email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Mot de passe</label>
+                    <input type="password" x-model="loginData.password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition">
+                    Se connecter
+                </button>
+                <p class="text-center text-sm text-gray-600">
+                    Pas de compte? 
+                    <button type="button" @click="isRegisterMode = true" class="text-blue-600 hover:underline font-semibold">
+                        S'inscrire
+                    </button>
+                </p>
+            </form>
+
+            <!-- Register Form -->
+            <form x-show="isRegisterMode" @submit.prevent="register" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Email</label>
+                    <input type="email" x-model="registerData.email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Âge</label>
+                    <input type="number" x-model.number="registerData.age" min="13" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Mot de passe</label>
+                    <input type="password" x-model="registerData.password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Confirmer le mot de passe</label>
+                    <input type="password" x-model="registerData.confirmPassword" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition">
+                    S'inscrire
+                </button>
+                <p class="text-center text-sm text-gray-600">
+                    Vous avez un compte? 
+                    <button type="button" @click="isRegisterMode = false" class="text-blue-600 hover:underline font-semibold">
+                        Se connecter
+                    </button>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div x-show="isAuthenticated" class="flex h-screen overflow-hidden">
+        <!-- Mobile Header -->
+        <div :class="sidebarOpen ? 'blur-sm opacity-50' : 'blur-0 opacity-100'" class="md:hidden fixed top-0 left-0 right-0 bg-white border-b border-gray-200 h-14 flex items-center justify-between px-4 z-40 transition-all duration-300 pointer-events-none" :style="sidebarOpen ? 'pointer-events: none' : 'pointer-events: auto'">
+            <button @click="sidebarOpen = !sidebarOpen" class="p-2 hover:bg-gray-100 rounded-lg transition pointer-events-auto">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+            <h1 class="text-lg font-bold text-blue-600 pointer-events-none">Folios IA</h1>
+            <div class="w-10"></div>
+        </div>
+
+        <!-- Sidebar Overlay (Mobile) -->
+        <div x-show="sidebarOpen" @click="sidebarOpen = false" x-transition class="md:hidden fixed inset-0 bg-black bg-opacity-50 z-30"></div>
+
+        <!-- Sidebar -->
+        <div 
+            :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
+            class="fixed md:static top-0 left-0 w-64 h-screen bg-gray-900 text-white flex flex-col border-r border-gray-800 transition-transform duration-300 ease-out z-40">
+            <div class="p-4 border-b border-gray-800 flex items-center justify-between">
+                <h1 class="text-xl font-bold text-blue-400">Folios IA</h1>
+                <button @click="sidebarOpen = false" class="md:hidden p-1 hover:bg-gray-800 rounded transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <button @click="newConversation(); sidebarOpen = false" class="m-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Nouvelle Discussion
+            </button>
+
+            <div class="flex-1 overflow-y-auto px-3 space-y-2">
+                <template x-for="conv in conversations" :key="conv.id">
+                    <button 
+                        @click="selectConversation(conv.id); sidebarOpen = false"
+                        :class="selectedConvId === conv.id ? 'bg-gray-700' : 'hover:bg-gray-800'"
+                        class="w-full text-left px-3 py-2 rounded-lg transition text-sm truncate">
+                        <span x-text="conv.title || 'Nouvelle conversation'"></span>
+                    </button>
+                </template>
+            </div>
+
+            <div class="p-4 border-t border-gray-800">
+                <button @click="logout()" class="w-full text-red-400 hover:text-red-300 font-semibold py-2 transition flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    Déconnexion
+                </button>
+            </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="flex-1 flex flex-col md:mt-0 mt-14">
+            <!-- Header (Desktop only) -->
+            <div class="hidden md:block border-b border-gray-200 bg-white p-6">
+                <h2 class="text-2xl font-bold text-gray-900">
+                    <span x-text="conversations.find(c => c.id === selectedConvId)?.title || 'Folios IA'"></span>
+                </h2>
+            </div>
+
+            <!-- Messages Container -->
+            <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 bg-gray-50" id="messagesContainer">
+                <template x-if="getCurrentMessages().length === 0">
+                    <div class="flex items-center justify-center h-full text-gray-400">
+                        <p>Commencez une nouvelle conversation</p>
+                    </div>
+                </template>
+                
+                <template x-for="msg in getCurrentMessages()" :key="msg.id">
+                    <div :class="msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'">
+                        <div :class="msg.role === 'user' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-900'" class="max-w-xs sm:max-w-sm lg:max-w-md px-4 py-2 rounded-lg break-words">
+                            <p x-text="msg.content"></p>
+                        </div>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Input Area -->
+            <div class="border-t border-gray-200 bg-white p-3 md:p-4">
+                <form @submit.prevent="sendMessage" class="flex gap-2 md:gap-3">
+                    <input 
+                        type="text" 
+                        x-model="messageInput" 
+                        placeholder="Écrivez votre message..."
+                        class="flex-1 px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        :disabled="isLoading">
+                    <button 
+                        type="submit"
+                        :disabled="isLoading || !messageInput.trim()"
+                        class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-2 px-3 md:px-4 rounded-lg transition active:scale-95 flex items-center justify-center">
+                        <svg x-show="!isLoading" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send-horizontal-icon lucide-send-horizontal"><path d="M3.714 3.048a.498.498 0 0 0-.683.627l2.843 7.627a2 2 0 0 1 0 1.396l-2.842 7.627a.498.498 0 0 0 .682.627l18-8.5a.5.5 0 0 0 0-.904z"/><path d="M6 12h16"/></svg>
+                        </svg>
+                        <svg x-show="isLoading" class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="./src/js/app.js"></script>
+</body>
+</html>

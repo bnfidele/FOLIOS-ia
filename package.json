@@ -1,0 +1,22 @@
+{
+  "name": "folios-ia",
+  "version": "1.0.0",
+  "description": "Application de chat avec IA utilisant Alpine.js et Tailwind CSS",
+  "main": "index.html",
+  "scripts": {
+    "dev": "tailwindcss -i ./src/css/input.css -o ./src/css/styles.css --watch",
+    "build": "tailwindcss -i ./src/css/input.css -o ./src/css/styles.css",
+    "serve": "python3 -m http.server 8000"
+  },
+  "keywords": [
+    "chat",
+    "ai",
+    "alpine",
+    "tailwind"
+  ],
+  "author": "bnfidele",
+  "license": "MIT",
+  "devDependencies": {
+    "tailwindcss": "^3.4.0"
+  }
+}

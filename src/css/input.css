@@ -1,0 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Dark Scrollbar */
+.bg-gray-900::-webkit-scrollbar-thumb {
+    background: #4b5563;
+}
+
+.bg-gray-900::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+}
+
+/* Animation for loading dots */
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@layer utilities {
+    .animate-bounce {
+        animation: bounce 1.4s infinite;
+    }
+}
+
+/* Smooth transitions */
+@layer components {
+    button,
+    input,
+    textarea {
+        @apply transition-all duration-300;
+    }
+}
+
+/* Focus states */
+@layer components {
+    input:focus,
+    textarea:focus {
+        @apply shadow-[0_0_0_3px_rgba(59,130,246,0.1)];
+    }
+}
+
+/* Message animations */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@layer utilities {
+    .message-item {
+        animation: slideIn 0.3s ease-out;
+    }
+}
+
+/* Responsive design tweaks */
+@media (max-width: 768px) {
+    .w-64 {
+        width: 100%;
+        height: auto;
+        border-bottom: 1px solid #1f2937;
+    }
+}
