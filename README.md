@@ -1,4 +1,4 @@
-# 🤖 Folios IA
+#  Folios IA
 
 > **L'Assistant IA que vous attendiez. Plus rapide, plus intelligent, plus simple.**
 
